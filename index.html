@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECG + HRV Analysis Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Cardiac Signal Intelligence</p>
+        <h1>ECG and HRV Analysis Dashboard</h1>
+        <p class="hero-copy">
+          Upload a CSV ECG trace or explore a synthetic waveform, detect R-peaks, inspect rhythm quality,
+          and review time-domain, frequency-domain, and nonlinear HRV summaries in one place.
+        </p>
+      </div>
+      <div class="hero-panel">
+        <div class="control-group">
+          <label for="fileInput">ECG CSV Upload</label>
+          <input id="fileInput" type="file" accept=".csv,.txt">
+          <small>Accepted formats: `amplitude` or `time,amplitude` per row.</small>
+        </div>
+        <div class="inline-actions">
+          <button id="demoButton" class="primary">Load Synthetic Demo</button>
+          <button id="analyzeButton">Analyze Current Signal</button>
+        </div>
+        <div class="sampling-grid">
+          <label>
+            Sampling rate (Hz)
+            <input id="sampleRateInput" type="number" min="50" max="2000" step="1" value="250">
+          </label>
+          <label>
+            Duration (s)
+            <input id="durationInput" type="number" min="10" max="300" step="5" value="60">
+          </label>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="status-row">
+        <article class="status-card">
+          <span>Signal source</span>
+          <strong id="signalSource">Waiting for data</strong>
+        </article>
+        <article class="status-card">
+          <span>Samples</span>
+          <strong id="sampleCount">0</strong>
+        </article>
+        <article class="status-card">
+          <span>Detected beats</span>
+          <strong id="beatCount">0</strong>
+        </article>
+        <article class="status-card">
+          <span>Quality note</span>
+          <strong id="qualityNote">No analysis yet</strong>
+        </article>
+      </section>
+
+      <section class="metrics-section">
+        <div class="section-heading">
+          <p class="eyebrow">HRV Summary</p>
+          <h2>Clinical-style overview</h2>
+        </div>
+        <div id="metricsGrid" class="metrics-grid"></div>
+      </section>
+
+      <section class="charts-grid">
+        <article class="chart-card wide">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">Waveform</p>
+              <h3>Filtered ECG with R-peak markers</h3>
+            </div>
+            <p id="waveformCaption" class="caption">Upload or generate a signal to begin.</p>
+          </div>
+          <canvas id="ecgCanvas" width="1200" height="360"></canvas>
+        </article>
+
+        <article class="chart-card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">Rhythm</p>
+              <h3>RR tachogram</h3>
+            </div>
+          </div>
+          <canvas id="rrCanvas" width="600" height="320"></canvas>
+        </article>
+
+        <article class="chart-card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">Nonlinear</p>
+              <h3>Poincare plot</h3>
+            </div>
+          </div>
+          <canvas id="poincareCanvas" width="600" height="320"></canvas>
+        </article>
+
+        <article class="chart-card wide">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">Spectrum</p>
+              <h3>Frequency-domain HRV</h3>
+            </div>
+            <p class="caption">Interpolated RR series with simple PSD estimation.</p>
+          </div>
+          <canvas id="psdCanvas" width="1200" height="320"></canvas>
+        </article>
+      </section>
+
+      <section class="table-section">
+        <div class="section-heading">
+          <p class="eyebrow">Beat Intervals</p>
+          <h2>Detected RR list</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>R time (s)</th>
+                <th>RR (ms)</th>
+              </tr>
+            </thead>
+            <tbody id="rrTableBody">
+              <tr>
+                <td colspan="3">No intervals available yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="notes-panel">
+        <div class="section-heading">
+          <p class="eyebrow">Interpretation</p>
+          <h2>What this dashboard reports</h2>
+        </div>
+        <div class="note-grid">
+          <article>
+            <h3>Time-domain HRV</h3>
+            <p>Mean NN, SDNN, RMSSD, pNN50, and heart rate are estimated from detected RR intervals.</p>
+          </article>
+          <article>
+            <h3>Frequency-domain HRV</h3>
+            <p>LF and HF band power are derived from a uniformly resampled RR series using a direct PSD estimate.</p>
+          </article>
+          <article>
+            <h3>Nonlinear behavior</h3>
+            <p>Poincare-derived SD1 and SD2 provide a compact view of short-term and long-term interval dispersion.</p>
+          </article>
+          <article>
+            <h3>Important note</h3>
+            <p>This is an educational dashboard and not a diagnostic medical device. Always validate against clinical workflows.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
